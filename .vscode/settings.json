@@ -1,0 +1,29 @@
+{
+	"editor.tabSize": 3,
+	"editor.detectIndentation": false,
+	"editor.insertSpaces": false,
+	// formatter
+	"prettier.enable": false,
+	"editor.formatOnSave": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit",
+		"source.organizeImports": "never"
+	},
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		"typescript",
+		"typescriptreact",
+		"html",
+		"markdown",
+		"json",
+		"json5",
+		"jsonc",
+		"svelte",
+		"css"
+	],
+
+	"files.associations": {
+		"*.css": "tailwindcss"
+	}
+}
