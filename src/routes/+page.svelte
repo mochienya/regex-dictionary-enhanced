@@ -4,6 +4,7 @@
 	const wordLists = ['general', 'scrabble (CSW24)']
 	let wordListIndex = $state(0)
 	let wordList: string[] = $state([])
+	const maxDisplayedWords = 200
 
 	let regexQuery = $state('')
 	const regex = $derived((() => {
@@ -36,12 +37,14 @@
 	})
 </script>
 
-<div class='flex-row py-10 px-2 gap-5 justify-center'>
-	<main class='flex-col gap-5 max-w-2xl w-full self-center items-center'>
-		<div class='flex-row gap-5'>
+<svelte:document onclick={() => showSettings = false} />
+
+<div class='flex-row justify-center'>
+	<main class='relative flex-col gap-5 max-w-2xl my-10 mx-2 w-full self-center items-center'>
+		<div class='flex-row w-full gap-2'>
 			<input
 				type='text'
-				class='bg-indigo-200 dark:bg-indigo-800 p-2 px-4 flex rounded-full w-sm text-lg'
+				class='bg-indigo-200 dark:bg-indigo-800 p-2 px-4 flex rounded-full w-full text-lg'
 				placeholder='regex here'
 				bind:value={regexQuery}
 			/>
@@ -49,7 +52,10 @@
 			<button
 				class='button p-2 flex justify-center items-center aspect-square rounded-full text-lg'
 				aria-label='toggle settings panel'
-				onclick={() => showSettings = !showSettings}
+				onclick={(e) => {
+					e.stopPropagation()
+					showSettings = !showSettings
+				}}
 			>
 				<i class='icon-[solar--settings-outline] text-2xl'></i>
 			</button>
@@ -70,20 +76,21 @@
 				</div>
 			{:else}
 				<ul class='flex-wrap gap-2 justify-around'>
-					{#each results.slice(0, 500) as result, index (index)}
+					{#each results.slice(0, maxDisplayedWords) as result, index (index)}
 						<li>{result}</li>
 					{/each}
 				</ul>
 
-				{#if results.length > 500}
-					<span class='text-xl'>and {results.length - 500} more entries</span>
+				{#if results.length > maxDisplayedWords}
+					<span class='text-xl'>and {results.length - maxDisplayedWords} more entries</span>
 				{/if}
 			{/if}
 		</div>
-	</main>
 
-	{#if showSettings}
-		<div class='flex-col gap-5'>
+		<div
+			class={`absolute right-0 top-16 min-w-xs bg-indigo-100/25 dark:bg-indigo-900/25 backdrop-blur-lg p-2 rounded-xl flex-col gap-5 ${showSettings ? 'opacity-100' : 'opacity-0'} transition-opacity ease-in-out`}
+			aria-hidden={!showSettings}
+		>
 			<div class='flex-col gap-2'>
 				<h2 class='text-lg'>Word List:</h2>
 				{#each wordLists as listName, index (index)}
@@ -100,10 +107,10 @@
 			<div class='flex-col gap-2'>
 				<h2 class='text-lg'>Regex Engine:</h2>
 
-				<button class="button px-2" disabled>
+				<button class='button px-2' disabled>
 					ECMAScript
 				</button>
 			</div>
 		</div>
-	{/if}
+	</main>
 </div>
