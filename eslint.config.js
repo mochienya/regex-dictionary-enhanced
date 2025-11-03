@@ -6,4 +6,7 @@ export default antfu({
 		indent: 'tab',
 		quotes: 'single',
 	},
+	rules: {
+		'no-new': 'off',
+	},
 })
