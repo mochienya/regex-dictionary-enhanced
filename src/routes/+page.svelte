@@ -1,8 +1,12 @@
 <script lang='ts'>
 	import type { RegexQueryResponse, RequestData, ResponseData, SetWordListResponse, WordList } from '$lib/regexWorker'
 	import { browser } from '$app/environment'
+	import { goto } from '$app/navigation'
+	import { page } from '$app/state'
 	import { wordLists } from '$lib/regexWorker'
 	import RegexWorker from '$lib/regexWorker?worker'
+	import WordDefinition from '$lib/wordDefinition.svelte'
+	import lodash from 'lodash'
 	import { onMount } from 'svelte'
 
 	const regexWorker = browser ? new RegexWorker() : undefined
@@ -27,7 +31,13 @@
 		wordList = response.wordList
 	}
 
-	let regexQuery = $state('')
+	let regexQuery = $state(page.url.searchParams.get('q') ?? '')
+	const updateQueryParamDebounced = lodash.debounce((regexQuery) => {
+		const newUrl = page.url
+		newUrl.searchParams.set('q', regexQuery)
+		goto(newUrl.search, { replaceState: true, noScroll: true, keepFocus: true })
+	})
+	$effect(() => updateQueryParamDebounced(regexQuery))
 	const regexError = $derived.by(() => {
 		try {
 			new RegExp(regexQuery)
@@ -42,7 +52,6 @@
 			remainingWords = 0
 			return
 		}
-		// TODO: debounce
 		messageRegexWorker({ type: 'query', regexQuery: $state.snapshot(regexQuery) })
 	})
 	function handleRegexQueryResponse(response: RegexQueryResponse) {
@@ -51,27 +60,28 @@
 	}
 
 	let showSettings = $state(false)
+	let wordToDefine: undefined | string = $state()
+	let wordDefinitionY: number = $state(500)
 </script>
-
-<svelte:document onclick={() => showSettings = false} />
 
 <div class='flex-row justify-center'>
 	<main class='relative flex-col gap-5 max-w-2xl my-10 mx-2 w-full self-center items-center'>
 		<div class='flex-row w-full gap-2'>
-			<input
-				type='text'
-				class='bg-indigo-200 dark:bg-indigo-800 p-2 px-4 flex rounded-full w-full text-lg'
-				placeholder='regex here'
-				bind:value={regexQuery}
-			/>
+			<div class='flex-row bg-indigo-200 dark:bg-indigo-800 p-2 px-4 w-full rounded-full text-lg'>
+				<span class='text-indigo-700 dark:text-indigo-300'>/</span>
+				<input
+					type='text'
+					class='grow focus:ring-0 focus:ring-offset-0 focus:outline-none light:focus:bg-indigo-100 dark:focus:bg-indigo-900 px-1 rounded-xl'
+					placeholder='regex here'
+					bind:value={regexQuery}
+				/>
+				<span class='text-indigo-700 dark:text-indigo-300'>/gi</span>
+			</div>
 
 			<button
 				class='button p-2 flex justify-center items-center aspect-square rounded-full text-lg'
 				aria-label='toggle settings panel'
-				onclick={(e) => {
-					e.stopPropagation()
-					showSettings = !showSettings
-				}}
+				onclick={() => showSettings = !showSettings}
 			>
 				<i class='icon-[solar--settings-outline] text-2xl'></i>
 			</button>
@@ -91,9 +101,18 @@
 					<span class='light:text-red-600 dark:text-red-400'>{regexError.message}</span>
 				</div>
 			{:else}
-				<ul class='flex-wrap gap-2 justify-around'>
+				<ul class='flex-wrap justify-around'>
 					{#each words as word, i (i)}
-						<li>{word}</li>
+						<li class='contents'>
+							<button class='p-1 cursor-pointer' onclick={(e) => {
+								e.stopPropagation()
+								const t = e.target as HTMLButtonElement
+								wordDefinitionY = t.offsetTop + t.clientHeight * 1.75
+								wordToDefine = word
+							}}>
+								{word}
+							</button>
+						</li>
 					{/each}
 				</ul>
 
@@ -103,30 +122,36 @@
 			{/if}
 		</div>
 
-		<div
-			class={`absolute right-0 top-16 min-w-xs bg-indigo-100/25 dark:bg-indigo-900/25 backdrop-blur-lg p-2 rounded-xl flex-col gap-5 ${showSettings ? 'opacity-100' : 'opacity-0'} transition-opacity ease-in-out`}
-			aria-hidden={!showSettings}
+		<dialog
+			class='absolute ml-auto top-16 min-w-xs float'
+			open={showSettings}
+			closedby='any'
+			onclose={() => showSettings = false}
 		>
-			<div class='flex-col gap-2'>
-				<h2 class='text-lg'>Word List:</h2>
-				{#each wordLists as listName, index (index)}
-					<button
-						class='button px-2'
-						onclick={() => selectWordList(listName)}
-						disabled={wordList === undefined || wordList === listName}
-					>
-						{listName}
+			<div class='flex-col gap5'>
+				<div class='flex-col gap-2'>
+					<h2 class='text-lg'>Word List:</h2>
+					{#each wordLists as listName, index (index)}
+						<button
+							class='button px-2'
+							onclick={() => selectWordList(listName)}
+							disabled={wordList === undefined || wordList === listName}
+						>
+							{listName}
+						</button>
+					{/each}
+				</div>
+
+				<div class='flex-col gap-2'>
+					<h2 class='text-lg'>Regex Engine:</h2>
+
+					<button class='button px-2' disabled>
+						ECMAScript
 					</button>
-				{/each}
+				</div>
 			</div>
-
-			<div class='flex-col gap-2'>
-				<h2 class='text-lg'>Regex Engine:</h2>
-
-				<button class='button px-2' disabled>
-					ECMAScript
-				</button>
-			</div>
-		</div>
+		</dialog>
 	</main>
 </div>
+
+<WordDefinition bind:word={wordToDefine} y={wordDefinitionY} />

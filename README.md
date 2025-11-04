@@ -5,7 +5,7 @@ Made because all other regex dictionaries don't offer:
 - selecting which dictionary to use
 - selecting which regex engine to use (TODO)
 - dark mode
-- definitions (TODO)
+- definitions
 
 ### Wordlist Sources
 - [General](https://github.com/dwyl/english-words)

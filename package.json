@@ -14,6 +14,7 @@
 	"dependencies": {
 		"@iconify/tailwind4": "^1.0.6",
 		"@tailwindcss/vite": "^4.1.16",
+		"lodash": "^4.17.21",
 		"tailwindcss": "^4.1.16"
 	},
 	"devDependencies": {
@@ -22,6 +23,7 @@
 		"@sveltejs/adapter-auto": "^6.1.0",
 		"@sveltejs/kit": "^2.43.2",
 		"@sveltejs/vite-plugin-svelte": "^6.2.0",
+		"@types/lodash": "^4.17.20",
 		"eslint": "^9.37.0",
 		"eslint-plugin-svelte": "^3.12.4",
 		"svelte": "^5.39.5",
