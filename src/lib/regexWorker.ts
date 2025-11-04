@@ -1,4 +1,4 @@
-export const wordLists = ['general', 'scrabble (CSW24)'] as const
+export const wordLists = ['general', 'scrabble (CSW24)', 'webster collegiate v11'] as const
 export type WordList = typeof wordLists[number]
 let wordList: string[] = []
 
