@@ -67,11 +67,11 @@
 <div class='flex-row justify-center'>
 	<main class='relative flex-col gap-5 max-w-2xl my-10 mx-2 w-full self-center items-center'>
 		<div class='flex-row w-full gap-2'>
-			<div class='flex-row bg-indigo-200 dark:bg-indigo-800 p-2 px-4 w-full rounded-full text-lg'>
+			<div class='flex-row bg-app-2 p-2 px-4 w-full rounded-full text-lg'>
 				<span class='text-indigo-700 dark:text-indigo-300'>/</span>
 				<input
 					type='text'
-					class='grow focus:ring-0 focus:ring-offset-0 focus:outline-none light:focus:bg-indigo-100 dark:focus:bg-indigo-900 px-1 rounded-xl'
+					class='grow focus:ring-0 focus:ring-offset-0 focus:outline-none focus:bg-app-1 px-1 rounded-xl'
 					placeholder='regex here'
 					bind:value={regexQuery}
 				/>
@@ -87,7 +87,7 @@
 			</button>
 		</div>
 
-		<div class='bg-indigo-200 dark:bg-indigo-800 w-full p-2 rounded-xl flex-col gap-5 items-center'>
+		<div class='bg-app-2 w-full p-2 rounded-xl flex-col gap-5 items-center'>
 			{#if wordList === undefined}
 				<div class='flex-col items-center gap-5 my-5'>
 					<span class='text-xl'>Loading word list</span>

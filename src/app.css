@@ -11,13 +11,15 @@
 }
 
 @theme {
-	--color-penis-50: light-dark(var(--bg-indigo-200), var(bg--indigo-800));
+	--color-app-0: light-dark(var(--color-indigo-50), var(--color-indigo-950));
+	--color-app-1: light-dark(var(--color-indigo-100), var(--color-indigo-900));
+	--color-app-2: light-dark(var(--color-indigo-200), var(--color-indigo-800));
 }
 
 @layer components {
 	.button {
-		@apply bg-indigo-200 dark:bg-indigo-800
-			disabled:bg-indigo-100 disabled:dark:bg-indigo-900
+		@apply bg-app-2
+			disabled:bg-app-1
 			disabled:text-indigo-900 disabled:dark:text-indigo-100
 			hover:bg-indigo-300 hover:dark:bg-indigo-700
 			transition-colors ease-in-out
@@ -26,7 +28,7 @@
 	}
 
 	.float {
-		@apply bg-indigo-100/75 dark:bg-indigo-900/75
+		@apply bg-app-1/75
 			backdrop-blur-lg p-2 rounded-xl;
 	}
 
